@@ -75,12 +75,12 @@ class ControllerTest {
         Controller controller = new Controller();
         try {
             controller.Interpreter(TestList);
-            System.out.println("--------------- Config memory list ---------------------------");
+/*            System.out.println("--------------- Config memory list ---------------------------");
             System.out.println(controller.printConfigMem());
             System.out.println("--------------- Boot Memory List -----------------------------");
             System.out.println(controller.printBootMem());
             System.out.println("--------------- App Memory List  -----------------------------");
-            System.out.println(controller.printAppMem());
+            System.out.println(controller.printAppMem());*/
         } catch (ControllerException e) {
             System.out.println(e.getMessage());
         }
