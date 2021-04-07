@@ -77,12 +77,10 @@ class ControllerTest {
         try {
             controller.Interpreter(TestList);
             simulatorUI.printHexList(controller.appMemoryArea, 0x1D000004, 0x1D000045);
-/*            System.out.println("--------------- Config memory list ---------------------------");
-            System.out.println(controller.printConfigMem());
-            System.out.println("--------------- Boot Memory List -----------------------------");
-            System.out.println(controller.printBootMem());
-            System.out.println("--------------- App Memory List  -----------------------------");
-            System.out.println(controller.printAppMem());*/
+            System.out.println();
+            simulatorUI.printHexList(controller.configMemoryArea, 0x1FC02FF0, 0x1FC02FFF);
+            System.out.println();
+            simulatorUI.printHexList(controller.bootMemoryArea, 0x1FC00000, 0x1FC0007F);
         } catch (ControllerException e) {
             System.out.println(e.getMessage());
         }
