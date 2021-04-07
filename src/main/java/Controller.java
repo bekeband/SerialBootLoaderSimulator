@@ -1,15 +1,10 @@
 import java.util.ArrayList;
-import java.util.List;
 
 public class Controller {
 
-    MemoryTypes bootMemoryType = new MemoryTypes(0x1FC00000, 0x1FC02FEF);
-    MemoryTypes appMemoryType = new MemoryTypes(0x1D000000, 0x1D07FFFF);
-    MemoryTypes configMemoryType = new MemoryTypes(0x1FC02FF0, 0x1FC02FFF);
-
-    ArrayList<Byte> appMemory;
-    ArrayList<Byte> bootMemory;
-    ArrayList<Byte> configMemory;
+    MemoryArea bootMemoryArea = new MemoryArea(0x1FC00000, 0x1FC02FEF);
+    MemoryArea appMemoryArea = new MemoryArea(0x1D000000, 0x1D07FFFF);
+    MemoryArea configMemoryArea = new MemoryArea(0x1FC02FF0, 0x1FC02FFF);
 
     int extendedLinearSegmentAddress = 0;
     int extendedSegmentAddress = 0;
@@ -73,52 +68,26 @@ public class Controller {
     boolean isEndOfFileRecord = false;
 
     public Controller() {
-        appMemory = new ArrayList<>(appMemoryType.getMemorySize());
-        setMemoryOfFF(appMemory, appMemoryType.getMemorySize());
-        bootMemory = new ArrayList<>(bootMemoryType.getMemorySize());
-        setMemoryOfFF(bootMemory, bootMemoryType.getMemorySize());
-        configMemory = new ArrayList<>(configMemoryType.getMemorySize());
-        setMemoryOfFF(configMemory, configMemoryType.getMemorySize());
+
     }
 
-    private void setMemoryOfFF(List<Byte> byteList, int capacity) {
-        for (int i = 0; i < capacity; i++) {
-            byteList.add((byte)0xFF);
-        }
-    }
-
-    public byte getMemoryByte(int address) throws ControllerException {
-
-        if (appMemoryType.getInBounds(address)) {
-            return appMemory.get(appMemoryType.getArrayShift(address));
-        } else
-            if (bootMemoryType.getInBounds(address)) {
-                return bootMemory.get(bootMemoryType.getArrayShift(address));
-            } else
-                if (configMemoryType.getInBounds(address)) {
-                    return configMemory.get(configMemoryType.getArrayShift(address));
+    public byte getMemoryByte(int physicalAddress) throws ControllerException {
+        if (!appMemoryArea.setByte(physicalAddress, data)) {
+            if (!bootMemoryArea.setByte(physicalAddress, data)) {
+                if (!configMemoryArea.setByte(physicalAddress, data)) {
+                    throw new ControllerException("Unknown memory type.");
                 }
-                else {
-
-                throw new ControllerException("Unknown memory type.");
+            }
         }
-
     }
 
-    public void setMemoryByte(int address, byte data) throws ControllerException {
+    public void setMemoryByte(int physicalAddress, byte data) {
+        try {
+            appMemoryArea.setByte(physicalAddress, data);
+        } catch (ControllerException e) {
+            e.printStackTrace();
+        }
 
-        if (appMemoryType.getInBounds(address)) {
-            appMemory.set(appMemoryType.getArrayShift(address), data);
-        } else
-        if (bootMemoryType.getInBounds(address)) {
-            bootMemory.set(bootMemoryType.getArrayShift(address), data);
-        } else
-        if (configMemoryType.getInBounds(address)) {
-            configMemory.set(configMemoryType.getArrayShift(address), data);
-        }
-        else {
-            throw new ControllerException("Unknown memory type.");
-        }
     }
 
     private int getAddressWithLinearSegment(int address) {
@@ -201,31 +170,6 @@ public class Controller {
 
         }
 
-    }
-
-    public String getHexString(List<Byte> memoryList) {
-        String result = "";
-        for (int i = 0; i < memoryList.size() / 16; i++) {
-            result += String.format("%04X : ", i * 16);
-            for (int j = 0; j < 16; j++) {
-                result += String.format("%02X,", memoryList.get(i * j));
-            }
-            result += "\n\r";
-        }
-        return result;
-
-    }
-
-    public String printAppMem() {
-        return getHexString(appMemory);
-    }
-
-    public String printBootMem() {
-        return getHexString(bootMemory);
-    }
-
-    public String printConfigMem() {
-        return getHexString(configMemory);
     }
 
 }
