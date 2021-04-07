@@ -37,7 +37,7 @@ public class Controller {
      * data bytes and appears as follows:
      * :02000004FFFFFC
      * where:
-     *
+     * <p>
      * 02 is the number of data bytes in the record.
      * 0000 is the address field. For the extended linear address record, this field is always 0000.
      * 04 is the record type 04 (an extended linear address record).
@@ -50,8 +50,12 @@ public class Controller {
     public int getPhysicalMemoryAddress(int virtualAddress) {
         int memoryShift = 0;
         switch (ksegValue) {
-            case 0: memoryShift = 0x80000000; break;
-            case 1: memoryShift = 0xA0000000; break;
+            case 0:
+                memoryShift = 0x80000000;
+                break;
+            case 1:
+                memoryShift = 0xA0000000;
+                break;
         }
         return virtualAddress - memoryShift;
     }
@@ -59,8 +63,12 @@ public class Controller {
     public int getVirtualMemoryAddress(int physicalAddress) {
         int memoryShift = 0;
         switch (ksegValue) {
-            case 0: memoryShift = 0x80000000; break;
-            case 1: memoryShift = 0xA0000000; break;
+            case 0:
+                memoryShift = 0x80000000;
+                break;
+            case 1:
+                memoryShift = 0xA0000000;
+                break;
         }
         return physicalAddress + memoryShift;
     }
@@ -72,22 +80,34 @@ public class Controller {
     }
 
     public byte getMemoryByte(int physicalAddress) throws ControllerException {
-        if (!appMemoryArea.setByte(physicalAddress, data)) {
+/*        if (!appMemoryArea.setByte(physicalAddress, data)) {
             if (!bootMemoryArea.setByte(physicalAddress, data)) {
                 if (!configMemoryArea.setByte(physicalAddress, data)) {
                     throw new ControllerException("Unknown memory type.");
                 }
             }
-        }
+        }*/
+        return 0;
     }
 
-    public void setMemoryByte(int physicalAddress, byte data) {
+    public void setMemoryByte(int physicalAddress, byte data) throws ControllerException {
         try {
-            appMemoryArea.setByte(physicalAddress, data);
+            if (appMemoryArea.getInBounds(physicalAddress)) {
+                appMemoryArea.setByte(physicalAddress, data);
+            } else {
+                if (bootMemoryArea.getInBounds(physicalAddress)) {
+                    bootMemoryArea.setByte(physicalAddress, data);
+                } else {
+                    if (configMemoryArea.getInBounds(physicalAddress)) {
+                        configMemoryArea.setByte(physicalAddress, data);
+                    } else {
+                        throw new ControllerException("setMemoryByte out of bounds.");
+                    }
+                }
+            }
         } catch (ControllerException e) {
             e.printStackTrace();
         }
-
     }
 
     private int getAddressWithLinearSegment(int address) {

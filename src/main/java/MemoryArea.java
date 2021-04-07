@@ -11,6 +11,7 @@ public class MemoryArea {
     MemoryArea(int startPhysicalAddress, int endPhysicalAddress) {
         this.startPhysicalAddress = startPhysicalAddress;
         this.endPhysicalAddress = endPhysicalAddress;
+        byteArea = new ArrayList<>();
         clearMemoryArea();
     }
 
@@ -29,16 +30,21 @@ public class MemoryArea {
         return endPhysicalAddress;
     }
 
-    public boolean getInBounds(int address) {
-        return ((address >= getStartPhysicalAddress()) & (address <= getEndPhysicalAddress()));
+    public boolean getInBounds(int pysicalAddress) {
+        return ((pysicalAddress >= getStartPhysicalAddress()) & (pysicalAddress <= getEndPhysicalAddress()));
     }
 
-    public byte getByte(int physicalAddress, Byte data) throws ControllerException {
+    public byte getRelativeByte(int shiftVal) {
+        return byteArea.get(shiftVal);
+    }
+
+    public byte getByte(int physicalAddress) throws ControllerException {
         if (getInBounds(physicalAddress)) {
             byteArea.get(getArrayShift(physicalAddress));
         } else {
             throw new ControllerException("Read Out of memory bound.");
         }
+        return 0;
     }
 
     public void setByte(int physicalAddress, byte data) throws ControllerException {

@@ -73,8 +73,10 @@ class ControllerTest {
     void interpreter() {
         ArrayList<Byte> TestList = new MakeByteArray().MakeArray(RealTestBuffer);
         Controller controller = new Controller();
+        SimulatorUI simulatorUI = new SimulatorUI(controller);
         try {
             controller.Interpreter(TestList);
+            simulatorUI.printHexList(controller.appMemoryArea, 0x1D000004, 0x1D000045);
 /*            System.out.println("--------------- Config memory list ---------------------------");
             System.out.println(controller.printConfigMem());
             System.out.println("--------------- Boot Memory List -----------------------------");
