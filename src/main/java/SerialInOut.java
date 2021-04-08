@@ -23,7 +23,7 @@ public class SerialInOut {
         PrintCurrentSerialPort(comPort);
 
         comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
-        comPort.setComPortParameters(115200, 8, 1, SerialPort.NO_PARITY);
+        comPort.setComPortParameters(230400, 8, 1, SerialPort.NO_PARITY);
 
         comPort.openPort();
     }

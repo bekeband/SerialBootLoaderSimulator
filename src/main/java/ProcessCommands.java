@@ -47,15 +47,15 @@ public class ProcessCommands {
 
                 break;
             case PROGRAM_FLASH:
-                System.out.println(" Program flash command:\n\r");
+//                System.out.println(" Program flash command:\n\r");
                 try {
-                    controller.ProgramMemory(packet);
-//                    controller.Interpreter(packet);
+//                    controller.ProgramMemory(packet);
+                    controller.Interpreter(packet);
                 } catch (ControllerException e) {
                     System.out.println(e.getMessage());
                 }
                 try {
-                    Thread.sleep(1);
+                    Thread.sleep(0);
                 } catch (InterruptedException e) {
                     System.out.println(e.getMessage());
                 }
@@ -63,8 +63,10 @@ public class ProcessCommands {
 
                 break;
             case READ_CRC:
+                System.out.println(" Read CRC command:\n\r");
                 break;
             case JMP_TO_APP:
+                System.out.println(" Jump to apps command:\n\r");
                 break;
         }
 

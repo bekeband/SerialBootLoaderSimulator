@@ -47,32 +47,6 @@ public class Controller {
      */
     public final int EXT_LINEAR_RECORD_TYPE = 0x04;
 
-    public int getPhysicalMemoryAddress(int virtualAddress) {
-        int memoryShift = 0;
-        switch (ksegValue) {
-            case 0:
-                memoryShift = 0x80000000;
-                break;
-            case 1:
-                memoryShift = 0xA0000000;
-                break;
-        }
-        return virtualAddress - memoryShift;
-    }
-
-    public int getVirtualMemoryAddress(int physicalAddress) {
-        int memoryShift = 0;
-        switch (ksegValue) {
-            case 0:
-                memoryShift = 0x80000000;
-                break;
-            case 1:
-                memoryShift = 0xA0000000;
-                break;
-        }
-        return physicalAddress + memoryShift;
-    }
-
     boolean isEndOfFileRecord = false;
 
     public Controller() {
@@ -133,13 +107,16 @@ public class Controller {
         switch (record_type) {
             /* DATA RECORD */
             case DATA_RECORD_TYPE:
+//                System.out.printf("DATA_RECORD_TYPE ADDRESS = %08X\n\r", address);
                 for (int i = 0; i < numbytes; i++) {
-                    setMemoryByte(getAddressWithLinearSegment(address), datas.get(i));
+                    int linearAddress = getAddressWithLinearSegment(address);
+                    setMemoryByte(linearAddress, datas.get(i));
                     address++;
                 }
                 break;
             /* END OF FILE RECORD. */
             case EOF_RECORD_TYPE:
+                System.out.println("EOF_RECORD_TYPE");
                 isEndOfFileRecord = true;
                 break;
             /* SEGMENT ADDRESS RECORD. */
@@ -149,6 +126,7 @@ public class Controller {
                 } else {
                     throw new ControllerException("The address size have to 2 bytes!");
                 }
+                System.out.printf("SEGMENT ADDRESS RECORD ADDR = %08X\n\r", extendedSegmentAddress);
                 break;
             /* EXTENDED LINEAR ADDRESS RECORD. */
             case EXT_LINEAR_RECORD_TYPE:
@@ -157,6 +135,7 @@ public class Controller {
                 } else {
                     throw new ControllerException("The address size have to 2 bytes!");
                 }
+                System.out.printf("LINEAR ADDRESS RECORD ADDR = %08X\n\r", extendedLinearSegmentAddress);
                 break;
         }
 

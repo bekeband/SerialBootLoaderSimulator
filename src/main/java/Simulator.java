@@ -5,19 +5,23 @@ import java.util.ArrayList;
 
 public class Simulator {
 
+    private Controller controller;
 
     public Simulator() {
+        controller = new Controller();
+    }
 
+    public Controller getController() {
+        return controller;
     }
 
     public void Run() {
 
         SerialInOut serialInOut = new SerialInOut();
-        Controller controller = new Controller();
+
         while (true) {
             byte[] readBuffer = serialInOut.readNextPacket();
             ProcessFrame processFrame = new ProcessFrame();
-
 
             try {
 
